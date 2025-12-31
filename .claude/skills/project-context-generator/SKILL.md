@@ -56,7 +56,7 @@ Ask the user for project details across these key areas:
 
 Use the template in `references/claude_md_template.md` to create a structured CLAUDE.md file. Fill in each section based on the gathered information.
 
-The CLAUDE.md file should be created in the **project root directory**, not in the SkillOS directory.
+The CLAUDE.md file should be created in the **`.claude/` directory** of the project.
 
 **Template sections:**
 1. **Project Overview** - Name, description, goals

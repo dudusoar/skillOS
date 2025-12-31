@@ -29,7 +29,7 @@ Find and read the project's CLAUDE.md file to understand:
 - Technical architecture
 - Known issues
 
-Default location: `./CLAUDE.md` in project root.
+Default location: `./.claude/CLAUDE.md`
 
 ### Step 2: Determine Log Entry Type
 
@@ -60,7 +60,7 @@ Identify what type of entry to create:
 
 ### Step 3: Create or Update LOG.md
 
-Check if LOG.md exists in the project root:
+Check if LOG.md exists in `.claude/` directory:
 
 **If LOG.md doesn't exist:**
 - Create it using the template in `references/log_template.md`

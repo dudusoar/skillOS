@@ -1,146 +1,268 @@
 # SkillOS
 
-**SkillOS** is a personal operating system for AI skills.
+**A personal operating system for AI skills that treats them as living, evolving units rather than static artifacts.**
 
-It explores how *skills*—as introduced by Anthropic—can be created, contextualized, evolved, and governed across projects, rather than treated as static, one-off artifacts.
+This repository explores how skills—as introduced by Anthropic—can be created, governed, and evolved across projects through a system of meta-skills and architectural principles.
 
-This repository is an experiment, not a framework.
-
----
-
-## Motivation
-
-Anthropic skills provide a powerful abstraction:  
-they package procedural knowledge, domain expertise, and reusable resources into modular units that extend an AI agent’s capabilities.
-
-However, in practice, skills are:
-
-- **Static**: designed once, manually updated, and reused as-is  
-- **Isolated**: selected and invoked individually, without explicit coordination  
-- **Project-blind**: lacking mechanisms to absorb project-specific experience and feed it back into general knowledge  
-
-For individual researchers and engineers who work across many projects, this raises a question:
-
-> What if skills were treated not as frozen artifacts, but as *living units* that evolve through use?
-
-SkillOS is a concrete attempt to explore that question.
+> **Status:** Early exploration. Expect iteration and incomplete pieces.
 
 ---
 
-## Core Idea
+## The Problem
 
-SkillOS treats skills as first-class entities in a personal system with:
+Current AI skills are static: designed once, manually updated, reused as-is. They lack mechanisms to:
+- Absorb project-specific experience
+- Extract general patterns from usage
+- Coordinate updates across a skill library
+- Separate reusable knowledge from project context
 
-- **Lifecycle**: creation → use → adaptation → abstraction → reuse  
-- **Context-awareness**: separation between general skill knowledge and project-specific context  
-- **Governance**: explicit rules for how skills are updated, composed, and refined  
-- **Meta-skills**: skills that operate *on other skills* (e.g., context generation, extraction, updating)
-
-In other words:
-
-> Skills become *capabilities*, and SkillOS becomes the system that manages them.
+For engineers working across multiple projects, this means **reinventing patterns** and **losing accumulated wisdom**.
 
 ---
 
-## Design Principles
+## The Idea
 
-### 1. Build *on top of* existing skill abstractions
+SkillOS introduces a **skill lifecycle with feedback loops**:
 
-SkillOS is inspired by Anthropic’s official skill format and design philosophy:
+```
+Create → Use → Update → Extract → Improve
+    ↑_________________________________|
+```
 
-- `SKILL.md` as the canonical interface  
-- Progressive disclosure to respect the context window  
-- Scripts, references, and assets as bundled resources  
-
-SkillOS does **not** replace this model—it extends it with additional structure and process.
-
----
-
-### 2. Separate **general knowledge** from **project context**
-
-Every skill conceptually consists of two layers:
-
-- **General layer**  
-  Reusable workflows, scripts, references, and heuristics that are stable across projects.
-- **Project layer**  
-  Injected context such as repo structure, schemas, constraints, naming conventions, and goals.
-
-SkillOS makes this separation explicit and operational.
+**Key components:**
+- **Skills** - Reusable capabilities (testing, logging, context management)
+- **Meta-skills** - Skills that operate on other skills (creation, updating, extraction)
+- **Context separation** - General knowledge (in skills) vs. project context (in CLAUDE.md)
+- **Contracts** - Explicit rules for what can evolve vs. what must remain stable
 
 ---
 
-### 3. Make evolution explicit and governed
+## Architectural Principles
 
-Instead of ad-hoc edits, SkillOS favors:
+From building and refactoring 9 skills, we've identified core principles:
 
-- Declared **contracts** inside each skill (what may change, what must remain stable)  
-- **Meta-skills** that handle updating, extraction, and refinement  
-- Controlled feedback from project experience into general skill knowledge  
+### 1. Separation of Concerns
 
-The goal is not automation for its own sake, but *cognitive leverage* over time.
+**Execution vs. Knowledge Extraction**
+- `knowledge-extractor`: Analyzes patterns, generates recommendations → `EXTRACTIONS.md`
+- `skill-updater`: Executes specific updates according to contracts
+- User: Reviews and decides what to apply
+- **Never**: Skill calling another skill programmatically
 
----
+**Project Context vs. General Knowledge**
+- General knowledge → Skills (reusable workflows, patterns)
+- Project context → CLAUDE.md, LOG.md, ERROR_LOG.md (managed by skills)
+- **Never**: Project-specific details in skill definitions
 
-### 4. Prefer small, composable steps over monolithic intelligence
+### 2. Progressive Disclosure
 
-SkillOS assumes:
+Keep `SKILL.md` concise (<500 lines):
+- Core workflow in SKILL.md
+- Detailed patterns, examples, guides in `references/`
+- Scripts in `scripts/`, assets in `assets/`
 
-- The model is already intelligent  
-- The bottleneck is not reasoning, but **structure**  
-- Good systems reduce ambiguity and cognitive load  
+**Example:** `test-writer` reduced from 618 → 244 lines (60% reduction)
 
-Skills should be concise, opinionated where necessary, and composable where possible.
+### 3. Governed Evolution
 
----
+Every skill has a **contract** defining:
+- **Stable elements**: Core workflow, domain knowledge (don't modify)
+- **Mutable elements**: References, examples, edge cases (can evolve)
+- **Update rules**: What's allowed, what requires review, what's prohibited
 
-## What This Repository Is (and Is Not)
+Updates happen through `skill-updater` following contracts, not ad-hoc edits.
 
-**This repo is:**
+### 4. Context Window as Public Good
 
-- A personal knowledge and capability system  
-- A design space exploration  
-- A discussion artifact meant to invite feedback and alternative viewpoints  
-
-**This repo is not:**
-
-- An official Anthropic extension  
-- A production-ready framework  
-- A general-purpose SaaS or agent platform  
-
----
-
-## Current Status
-
-SkillOS is at an early, exploratory stage.
-
-The initial focus is on:
-
-- Defining minimal conventions for skills and meta-skills  
-- Designing a clean separation between general skills and project context  
-- Using real projects to stress-test the ideas  
-
-Expect incomplete pieces, iteration, and changes.
+Challenge every paragraph: *"Does Claude really need this?"*
+- Prefer concise examples over verbose explanations
+- Move details to references, load only when needed
+- Respect that SKILL.md competes for context with conversation history
 
 ---
 
-## Why Share This Publicly
+## Skill Taxonomy
 
-This repository is shared to:
+SkillOS skills fall into three categories:
 
-- Think more clearly by making assumptions explicit  
-- Invite critique from others working with AI skills, agents, and tooling  
-- Explore whether this way of organizing AI capabilities resonates beyond a single workflow  
+### 1. Maintenance Skills
+Manage project documentation and knowledge:
+- **project-logger** - Maintains LOG.md (strategic decisions, milestones)
+- **error-logger** - Maintains ERROR_LOG.md (tactical debugging, troubleshooting)
+- **project-context-generator** - Creates CLAUDE.md (project overview, constraints)
+- **skill-analyzer** - Populates CLAUDE.md sections 5-6 (available/missing skills)
 
-If you find the ideas interesting—or flawed—I would welcome discussion.
+### 2. Execution Skills
+Apply specialized knowledge to specific tasks:
+- **test-writer** - Generates comprehensive test files (pytest, jest, etc.)
+- **git-workflow** - Quick reference for Git commands and workflows
+
+### 3. Meta-Skills
+Operate on skills themselves:
+- **skill-contract-generator** - Defines evolution rules for skills
+- **skill-updater** - Executes updates according to contracts
+- **knowledge-extractor** - Analyzes projects, identifies extractable patterns
 
 ---
 
-## License & Use
+## Key Design Insights
 
-This repository is primarily a research and exploration artifact.
+### Files as Interfaces
 
-Use, adapt, or ignore any part of it as you see fit.
+SkillOS uses specific files as coordination points:
+- **CLAUDE.md** - Global project context, maintained by `project-context-generator`, `skill-analyzer`
+- **LOG.md** - Strategic project evolution, maintained by `project-logger`
+- **ERROR_LOG.md** - Tactical debugging knowledge, maintained by `error-logger`
+- **EXTRACTIONS.md** - Knowledge extraction recommendations, generated by `knowledge-extractor`
+
+### Contracts Enable Evolution
+
+Without contracts, updates fragment knowledge. With contracts:
+- Clear boundaries (what changes, what doesn't)
+- Safe automation (skill-updater respects rules)
+- Knowledge extraction (where to look for patterns)
+- Accountability (why changes were made)
+
+### Meta-Skills Close the Loop
+
+The lifecycle only works if meta-skills handle the transitions:
+```
+skill-creator (external) → Create new skill
+    ↓
+skill-contract-generator → Define evolution rules
+    ↓
+[Use skill across projects]
+    ↓
+skill-updater → Tactical improvements during project
+    ↓
+knowledge-extractor → Strategic analysis after project
+    ↓
+skill-updater → Apply extracted patterns
+    ↓
+[Improved skill for next project]
+```
 
 ---
 
-*SkillOS is an ongoing experiment. The most important part is the thinking, not the code.*
+## What We've Built
+
+**9 skills** covering the full lifecycle:
+
+| Skill | Lines | Purpose |
+|-------|-------|---------|
+| project-context-generator | ~150 | Create CLAUDE.md for new projects |
+| skill-analyzer | ~200 | Index available/missing skills |
+| git-workflow | ~180 | Git command reference |
+| project-logger | ~170 | Maintain LOG.md |
+| skill-contract-generator | ~335 | Define skill contracts |
+| skill-updater | ~338 | Execute skill updates |
+| knowledge-extractor | ~245 | Analyze and recommend extractions |
+| error-logger | ~400 | Maintain ERROR_LOG.md |
+| test-writer | 244 | Generate test files |
+
+**Lessons learned:**
+- Progressive disclosure works: test-writer went from 618 → 244 lines
+- Contracts prevent chaos: clear rules for what can evolve
+- Skill-calling-skill is an anti-pattern: always user-mediated
+- Context separation scales: CLAUDE.md stays clean, skills stay reusable
+
+---
+
+## Example: Test-Writer Refactoring
+
+**Before:** 618 lines, everything in SKILL.md
+- Core workflow
+- Extensive examples
+- Framework guides
+- Mocking strategies
+- Best practices
+
+**After:** 244 lines in SKILL.md, details in references
+```
+test-writer/
+├── SKILL.md (244 lines)
+│   └── Core 8-step workflow + basic examples
+└── references/
+    ├── test_patterns.md (async, DB, API, file I/O)
+    ├── framework_guides.md (pytest, jest, mocha)
+    └── mocking_guide.md (strategies, best practices)
+```
+
+**Result:** 60% reduction, faster loading, better organization, all information preserved.
+
+---
+
+## Architectural Invariants
+
+From 50+ hours of building and refactoring:
+
+1. **Skills don't call skills** - User reviews and mediates
+2. **Project context stays out of skills** - Goes in CLAUDE.md, LOG.md, ERROR_LOG.md
+3. **SKILL.md stays concise** - <500 lines, use references/
+4. **Contracts govern evolution** - Explicit rules, not ad-hoc edits
+5. **Execution ≠ Analysis** - Separate tools for doing vs. recommending
+6. **Files as interfaces** - Coordination through CLAUDE.md, LOG.md, EXTRACTIONS.md
+
+---
+
+## Why This Matters
+
+**For individual practitioners:**
+- Build a personal skill library that improves with use
+- Extract reusable patterns from project work
+- Maintain clean separation between general and project knowledge
+
+**For AI research:**
+- Concrete exploration of skill composition and evolution
+- Governance patterns for multi-skill systems
+- Context window optimization through progressive disclosure
+
+**For the field:**
+- Skills as living units, not static artifacts
+- Feedback loops from usage to improvement
+- Systems thinking for AI capabilities
+
+---
+
+## What This Is (and Isn't)
+
+**Is:**
+- A personal knowledge system
+- A design space exploration
+- An invitation to discuss alternative approaches
+
+**Isn't:**
+- A production framework
+- A general-purpose platform
+
+---
+
+## Open Questions
+
+1. **Skill composition**: How should skills coordinate without calling each other?
+2. **Knowledge extraction**: What patterns are worth extracting vs. leaving in projects?
+3. **Contract granularity**: How detailed should contracts be?
+4. **Scalability**: Does this approach work with 50+ skills? 100+?
+5. **Sharing**: How to share skills while preserving privacy of project context?
+
+---
+
+## Contributing
+
+This is a personal exploration, but feedback is welcome:
+- Architectural critique
+- Alternative designs
+- Real-world usage patterns
+- Lessons from your own skill systems
+
+Open an issue or discussion to share your thoughts.
+
+---
+
+## License
+
+MIT - Use, adapt, or ignore as you see fit.
+
+---
+
+*SkillOS is an experiment in treating AI skills as first-class, evolving entities. The ideas matter more than the code.*

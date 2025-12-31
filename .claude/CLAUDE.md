@@ -210,6 +210,108 @@ description: What the skill does and when to use it (be comprehensive - this tri
 
 ---
 
+### skill-contract-generator
+**Relevance:** Meta-skill for defining evolution rules for skills.
+
+**Key use cases:**
+- After creating new skills: Define update boundaries
+- Formalizing which parts can evolve vs. must stay stable
+- Setting knowledge extraction guidelines
+
+**Related skills:** Output consumed by `skill-updater` to guide safe updates.
+
+---
+
+### skill-updater
+**Relevance:** Meta-skill for evolving skills during project work.
+
+**Key use cases:**
+- Discovered pattern worth adding to skill
+- Found better way to explain existing concept
+- Encountered edge case not documented
+- Need to add project-specific workflow to references
+
+**Related skills:** Reads contracts from `skill-contract-generator`, logs changes via `project-logger`.
+
+---
+
+### git-workflow
+**Relevance:** Quick reference for Git commands and workflows.
+
+**Key use cases:**
+- Need Git command syntax
+- Resolving merge conflicts
+- Managing branches
+- Troubleshooting Git issues
+
+**Related skills:** General-purpose reference, no specific dependencies.
+
+---
+
+### project-logger
+**Relevance:** Maintains chronological log of project evolution.
+
+**Key use cases:**
+- Completed significant task or milestone
+- Made architectural decision
+- Encountered and resolved issue
+- Need to review project history
+
+**Related skills:** Works with all skills to document their usage and evolution.
+
+---
+
+### knowledge-extractor
+**Relevance:** Meta-skill for extracting generalizable knowledge from completed projects.
+
+**Key use cases:**
+- After project completion: Extract learnings to skills
+- Identify patterns that appeared across multiple projects
+- Analyze LOG.md for skill update opportunities
+- Generate extraction recommendations (EXTRACTIONS.md)
+
+**Related skills:** Analyzes history from `project-logger`, generates recommendations for `skill-updater` (user-invoked).
+
+**Important:** This skill only analyzes and recommends - it does NOT execute updates. User reviews EXTRACTIONS.md and decides whether to invoke skill-updater.
+
+---
+
+### error-logger
+**Relevance:** Maintains detailed log of errors, bugs, and debugging sessions (tactical debugging knowledge).
+
+**Key use cases:**
+- Encountered error or exception
+- Debugging session >15 minutes
+- Found non-obvious solution or workaround
+- Discovered edge case
+
+**Complements:** project-logger (strategic decisions) with tactical debugging knowledge in ERROR_LOG.md
+
+**Related skills:** Works with `knowledge-extractor` to identify troubleshooting patterns for extraction to skills.
+
+**Important:** Separates tactical debugging (ERROR_LOG.md) from strategic project evolution (LOG.md). Enables accumulation of troubleshooting wisdom across projects.
+
+---
+
+### test-writer
+**Relevance:** Generates comprehensive test files for functions and classes.
+
+**Key use cases:**
+- Just finished writing a function or class
+- Adding test coverage to existing code
+- Need to systematically test edge cases
+- Setting up testing infrastructure
+
+**Supports:** Multiple frameworks (pytest, unittest, jest, mocha) with AAA pattern and best practices
+
+**Related skills:** Uses error patterns from `error-logger` to identify test edge cases.
+
+**Important:** Follows progressive disclosure - concise 8-step workflow in SKILL.md, detailed patterns in references/ (test patterns, framework guides, mocking strategies). Automates test scaffolding while enforcing test independence and comprehensive coverage.
+
+**Design note:** Refactored from 618 to 244 lines (60% reduction) following skill-creator principles.
+
+---
+
 ## 6. Missing Skills (Project-Specific)
 
 > **Note:** This section is populated by the `skill-analyzer` meta-skill.
@@ -217,44 +319,22 @@ description: What the skill does and when to use it (be comprehensive - this tri
 > It identifies project-specific skills that should be created to capture
 > domain knowledge, workflows, or patterns unique to this project.
 
-### skill-updater
-**Rationale:** Skills need to evolve during project usage. A meta-skill to handle in-project skill updates is needed.
+*No missing skills identified at this time.*
 
-**Suggested content:**
-- `SKILL.md` - Workflow for updating skills during a project
-- Read skill contracts (what's stable vs. mutable)
-- Update skills according to declared rules
-- Track changes for later abstraction
-
-**Priority:** High
-
-**Next steps:** Use `skill-creator` to initialize this skill.
-
----
-
-### knowledge-extractor
-**Rationale:** After project completion, extract learnings and update general skills. This closes the learning loop.
-
-**Suggested content:**
-- `SKILL.md` - Workflow for extracting knowledge from CLAUDE.md
-- Analyze project-specific skills for patterns
-- Identify what should be abstracted to general skills
-- Update skill knowledge bases
-
-**Priority:** Medium
-
-**Next steps:** Create after `skill-updater` is complete and tested.
+SkillOS core meta-skills are now complete. Additional skills will be identified as we use SkillOS across different projects.
 
 ---
 
 ## Maintenance Notes
 
-**Last Updated:** 2025-12-30
+**Last Updated:** 2025-12-31
 
 **Recent Changes:**
-- Initial CLAUDE.md created for SkillOS project
-- Added `project-context-generator` and `skill-analyzer` meta-skills
-- Defined core architecture and conventions
+- Added `skill-contract-generator` and `skill-updater` meta-skills (2025-12-31)
+- Added `git-workflow` and `project-logger` general skills (2025-12-30)
+- Initial CLAUDE.md created for SkillOS project (2025-12-30)
+- Added `project-context-generator` and `skill-analyzer` meta-skills (2025-12-30)
+- Defined core architecture and conventions (2025-12-30)
 
 **Known Issues:**
 - None yet - early stage
